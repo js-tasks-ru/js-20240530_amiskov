@@ -50,7 +50,7 @@ export default class ColumnChart {
 
     createChartTemplate(data) {
         if (data.length === 0) {
-            return `<img src="./charts-skeleton.svg">`;
+            return;
         }
         const maxValue = Math.max(...data);
         const scale = this.chartHeight / maxValue;
