@@ -7,14 +7,14 @@ export default class ColumnChart {
     constructor(options = {}) {
         const { data = [] } = options;
 
-        const elementHtml = this.renderElement(options);
+        const elementHtml = this.createTemplate(options);
         this.element = this.createElement(elementHtml);
         this.#chartElement = this.element.querySelector(".column-chart__chart");
 
         this.update(data);
     }
 
-    renderElement({ label, link, value, formatHeading = h => h }) {
+    createTemplate({ label, link, value, formatHeading = h => h }) {
         const totalValue = formatHeading(value);
         const linkHTML = link ? `<a class="column-chart__link" href="${link}">View all</a>` : "";
         return `
@@ -39,23 +39,23 @@ export default class ColumnChart {
         } else {
             this.element.classList.remove(this.#loadingClass);
         }
-        this.#chartElement.innerHTML = this.renderChart(data, this.chartHeight);
+        this.#chartElement.innerHTML = this.createChartTemplate(data);
     }
 
-    renderChartBar(value, maxValue, scale) {
+    createChartBarTemplate(value, maxValue, scale) {
         const percent = (value / maxValue * 100).toFixed(0);
         const barHeight = Math.floor(value * scale);
         return `<div style="--value: ${barHeight}" data-tooltip="${percent}%"></div>`
     }
 
-    renderChart(data) {
+    createChartTemplate(data) {
         if (data.length === 0) {
             return `<img src="./charts-skeleton.svg">`;
         }
         const maxValue = Math.max(...data);
         const scale = this.chartHeight / maxValue;
         return data
-            .map(value => this.renderChartBar(value, maxValue, scale))
+            .map(value => this.createChartBarTemplate(value, maxValue, scale))
             .join("");
     }
 
