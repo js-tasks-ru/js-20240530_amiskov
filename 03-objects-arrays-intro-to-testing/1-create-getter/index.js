@@ -9,7 +9,7 @@ export function createGetter(path) {
         let res = obj;
         for (const key of pathKeys) {
             if (!Object.hasOwn(res, key)) {
-                return undefined;
+                return;
             }
             res = res[key];
         }
@@ -22,7 +22,7 @@ function createGetterRec(path) {
     function rec(obj, partIdx) {
         const key = pathParts[partIdx];
         if (!Object.hasOwn(obj, key)) {
-            return undefined;
+            return;
         }
         if (partIdx === pathParts.length - 1) {
             return obj[key]
