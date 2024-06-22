@@ -1,5 +1,6 @@
 export default class NotificationMessage {
   static instance = null;
+  static timeoutId = -1;
 
   constructor(message = "", {type = "success", duration = 2000} = {}) {
     this.type = type;
@@ -19,20 +20,23 @@ export default class NotificationMessage {
     const el = this.getRootElement();
     el.style.cssText = `--value: ${this.duration / 1000}s`;
     el.innerHTML = html;
-    el.classList.value = "notification"; // keep only `notification`
+    el.classList.value = "notification"; // keep only `notification` className
     el.classList.add(this.type);
     return el;
   }
 
   show(target) {
-    if (target) {
-      target.appendChild(this.element);
-    } else {
-      document.body.appendChild(this.element);
+    if (!target) {
+      target = document.body;
     }
 
-    clearTimeout(this.timeoutId);
-    this.timeoutId = setTimeout(() => {
+    // `target` must have only one notification element.
+    if (!target.contains(this.element)) {
+      target.appendChild(NotificationMessage.instance);
+    }
+
+    clearTimeout(NotificationMessage.timeoutId);
+    NotificationMessage.timeoutId = setTimeout(() => {
       this.destroy();
     }, this.duration);
 
@@ -52,7 +56,7 @@ export default class NotificationMessage {
 
   destroy() {
     this.remove();
-    clearTimeout(this.timeoutId);
+    clearTimeout(NotificationMessage.timeoutId);
     NotificationMessage.instance = null;
   }
 
