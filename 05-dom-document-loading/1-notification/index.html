@@ -11,9 +11,9 @@
   import NotificationMessage from './index.js';
 
   btn1.addEventListener('click', () => {
-    const notification = new NotificationMessage('Hello World ' + Math.random(), {
+    const notification = new NotificationMessage('Hello World', {
       duration: 2000,
-      type: Math.random() < .5 ? 'success' : 'error'
+      type: 'success'
     });
 
     notification.show();
