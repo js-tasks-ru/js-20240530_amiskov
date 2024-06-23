@@ -1,5 +1,5 @@
 export default class NotificationMessage {
-  static timeoutId = -1;
+  timeoutId = -1;
 
   constructor(message = "", {type = "success", duration = 2000} = {}) {
     this.type = type;
@@ -25,7 +25,7 @@ export default class NotificationMessage {
     NotificationMessage.lastShownComponent = this;
 
     target.appendChild(this.element);
-    NotificationMessage.timeoutId = setTimeout(() => {
+    this.timeoutId = setTimeout(() => {
       this.destroy();
     }, this.duration);
   }
@@ -44,7 +44,7 @@ export default class NotificationMessage {
 
   destroy() {
     this.remove();
-    clearTimeout(NotificationMessage.timeoutId);
+    clearTimeout(this.timeoutId);
     NotificationMessage.lastShownComponent = null;
   }
 
