@@ -3,10 +3,6 @@ export default class SortableTable {
     header: null,
     body: null
   }
-  columns = ['images', 'title', 'quantity', 'price', 'sales'];
-  cellTemplates = {
-    default: (cellData) => `<div class="sortable-table__cell">${cellData}</div>`,
-  };
 
   constructor(headerConfig = [], data = []) {
     this.headerConfig = headerConfig;
@@ -18,15 +14,33 @@ export default class SortableTable {
     this.subElements.body.innerHTML = this.createBodyTemplate();
   }
 
-  sort(field, order) {
+  sortData(field, order) {
+    let fieldSortType = null;
+    for (const {id, sortable, sortType} of this.headerConfig) {
+      if (id === field && sortable) {
+        fieldSortType = sortType;
+        break; // the 1st occurrence
+      }
+    }
+    if (!fieldSortType) {
+      return;
+    }
+
     const sortingMultiplier = order === 'desc' ? -1 : 1;
-    if (["quantity", "price", "sales"].includes(field)) {
+    switch (fieldSortType) {
+    case "number":
       this.data.sort((a, b) => (a[field] - b[field]) * sortingMultiplier);
-    } else if (["title"].includes(field)) {
+      break;
+    case "string":
       this.data.sort((a, b) => a[field].localeCompare(
         b[field], ['ru', 'en'], {caseFirst: 'upper'}
       ) * sortingMultiplier);
+      break;
     }
+  }
+
+  sort(field, order) {
+    this.sortData(field, order);
     this.subElements.body.innerHTML = this.createBodyTemplate();
     const $sortedCol = this.subElements.header.querySelector(`[data-id="${field}"]`);
     $sortedCol.dataset.order = order;
@@ -34,10 +48,7 @@ export default class SortableTable {
 
   createHeaderTemplate() {
     let headerHtml = '';
-    for (const {id, sortable, template, title} of this.headerConfig) {
-      if (template) { // add `template` for body-cells formatting of type `id`
-        this.cellTemplates[id] = template;
-      }
+    for (const {id, sortable, title} of this.headerConfig) {
       headerHtml += `
         <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}">
           <span>${title}</span>
@@ -48,13 +59,11 @@ export default class SortableTable {
   }
 
   createRowTemplate(rowData) {
+    const defaultTemplate = (cellData) => `<div class="sortable-table__cell">${cellData}</div>`;
     let rowHtml = '';
-    for (const columnId of this.columns) {
-      if (!rowData[columnId]) {
-        continue;
-      }
-      const templateId = Object.hasOwn(this.cellTemplates, columnId) ? columnId : 'default';
-      rowHtml += this.cellTemplates[templateId](rowData[columnId]);
+    for (const {id, template} of this.headerConfig) {
+      const rowTemplate = template ? template : defaultTemplate;
+      rowHtml += rowTemplate(rowData[id]);
     }
     return rowHtml;
   }
