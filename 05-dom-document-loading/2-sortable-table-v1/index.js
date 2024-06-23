@@ -42,8 +42,6 @@ export default class SortableTable {
   sort(field, order) {
     this.sortData(field, order);
     this.subElements.body.innerHTML = this.createBodyTemplate();
-    const $sortedCol = this.subElements.header.querySelector(`[data-id="${field}"]`);
-    $sortedCol.dataset.order = order;
   }
 
   createHeaderTemplate() {
