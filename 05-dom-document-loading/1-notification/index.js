@@ -1,5 +1,4 @@
 export default class NotificationMessage {
-  static instance = null;
   static timeoutId = -1;
 
   constructor(message = "", {type = "success", duration = 2000} = {}) {
@@ -9,15 +8,8 @@ export default class NotificationMessage {
     this.element = this.createElement(this.createTemplate());
   }
 
-  getRootElement() {
-    if (!NotificationMessage.instance) {
-      NotificationMessage.instance = document.createElement('div');
-    }
-    return NotificationMessage.instance;
-  }
-
   createElement(html) {
-    const el = this.getRootElement();
+    const el = document.createElement('div');
     el.style.cssText = `--value: ${this.duration / 1000}s`;
     el.innerHTML = html;
     el.classList.value = "notification"; // keep only `notification` className
@@ -25,21 +17,17 @@ export default class NotificationMessage {
     return el;
   }
 
-  show(target) {
-    if (!target) {
-      target = document.body;
-    }
-
+  show(target = document.body) {
     // `target` must have only one notification element.
-    if (!target.contains(this.element)) {
-      target.appendChild(NotificationMessage.instance);
+    if (NotificationMessage.lastShownComponent) {
+      NotificationMessage.lastShownComponent.destroy();
     }
+    NotificationMessage.lastShownComponent = this;
 
-    clearTimeout(NotificationMessage.timeoutId);
+    target.appendChild(this.element);
     NotificationMessage.timeoutId = setTimeout(() => {
       this.destroy();
     }, this.duration);
-
   }
 
   createTemplate() {
@@ -57,7 +45,7 @@ export default class NotificationMessage {
   destroy() {
     this.remove();
     clearTimeout(NotificationMessage.timeoutId);
-    NotificationMessage.instance = null;
+    NotificationMessage.lastShownComponent = null;
   }
 
   remove() {
