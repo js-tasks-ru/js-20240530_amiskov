@@ -36,11 +36,7 @@ export default class SortableTable extends SortableTableV1 {
     }
 
     let sortOrder = $columnHeader.dataset.order;
-    if (sortOrder === "desc") {
-      sortOrder = "asc";
-    } else {
-      sortOrder = "desc";
-    }
+    sortOrder = (sortOrder === "desc") ? "asc" : "desc";
 
     this.sort($columnHeader.dataset.id, sortOrder);
   }
