@@ -6,25 +6,26 @@ export default class SortableTable extends SortableTableV1 {
     sorted = {}
   } = {}) {
     super(headersConfig, data);
+    this.subElements.arrowIcon = this.createArrowIcon();
     this.createEventListeners();
     if (sorted.id && sorted.order) {
       this.sort(sorted.id, sorted.order);
     }
   }
 
-  sort(fieldId, order) {
-    super.sort(fieldId, order);
-
-    const $colHeader = this.subElements.header.querySelector(`[data-id="${fieldId}"]`);
-    $colHeader.dataset.order = order;
-
-    // Arrow icon.
-    this.subElements.header.querySelectorAll('[data-element="arrow"]').forEach(($el) => $el.remove());
+  createArrowIcon() {
     const $arrow = document.createElement('span');
     $arrow.classList.add('sortable-table__sort-arrow');
     $arrow.dataset.element = "arrow";
     $arrow.innerHTML = `<span class="sort-arrow"></span>`;
-    $colHeader.appendChild($arrow);
+    return $arrow;
+  }
+
+  sort(fieldId, order) {
+    super.sort(fieldId, order);
+    const $colHeader = this.subElements.header.querySelector(`[data-id="${fieldId}"]`);
+    $colHeader.dataset.order = order;
+    $colHeader.appendChild(this.subElements.arrowIcon);
   }
 
   onHeaderPointerDown = (event) => {
@@ -35,11 +36,7 @@ export default class SortableTable extends SortableTableV1 {
     }
 
     let sortOrder = $columnHeader.dataset.order;
-    if (sortOrder === "desc") {
-      sortOrder = "asc";
-    } else {
-      sortOrder = "desc";
-    }
+    sortOrder = (sortOrder === "desc") ? "asc" : "desc";
 
     this.sort($columnHeader.dataset.id, sortOrder);
   }
