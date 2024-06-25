@@ -22,16 +22,17 @@ class Tooltip {
       return;
     }
     this.render($base.dataset.tooltip);
+    document.addEventListener("pointermove", this.onDocumentPointerMove);
   }
 
   onDocumentPointerOut = () => {
     this.remove();
+    document.removeEventListener("pointermove", this.onDocumentPointerMove);
   }
 
   render(text) {
     this.element.innerHTML = text;
     document.body.appendChild(this.element);
-    document.addEventListener("pointermove", this.onDocumentPointerMove);
   }
 
   onDocumentPointerMove = (ev) => {
@@ -41,7 +42,6 @@ class Tooltip {
 
   remove() {
     this.element.remove();
-    document.removeEventListener("pointermove", this.onDocumentPointerMove);
   }
 
   destroy() {
