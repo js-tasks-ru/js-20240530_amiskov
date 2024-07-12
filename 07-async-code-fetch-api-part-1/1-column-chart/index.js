@@ -4,6 +4,7 @@ const BACKEND_URL = 'https://course-js.javascript.ru';
 
 export default class ColumnChart {
   chartHeight = 50;
+  subElements = {};
   #loadingClass = "column-chart_loading";
 
   constructor(options = {}) {
@@ -55,7 +56,7 @@ export default class ColumnChart {
 
     this.subElements.header.innerHTML = this.formatHeading(headerTotals);
     this.subElements.body.innerHTML = this.createChartTemplate(values);
-    
+
     this.element.classList.remove(this.#loadingClass);
     return valuesByDays;
   }
